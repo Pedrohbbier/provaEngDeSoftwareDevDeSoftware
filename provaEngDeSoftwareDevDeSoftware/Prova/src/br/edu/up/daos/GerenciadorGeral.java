@@ -45,18 +45,43 @@ public class GerenciadorGeral {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        
 
         float media = 6.0f;
+        float somaNotas = 0.0f;
+        float maiorNota = Float.MIN_VALUE;
+        float menorNota = Float.MAX_VALUE;
         List<Aluno> aprovados = new ArrayList<>();
         List<Aluno> reprovados = new ArrayList<>();
+        int aprovadosCount = 0;
+        int reprovadosCount = 0;
 
         for (Aluno aluno : alunos) {
+
+            float nota = aluno.getNota();
+            somaNotas += nota;
+
+            if (nota > maiorNota) {
+                maiorNota = nota;
+            }
+
+            if (nota < menorNota) {
+                menorNota = nota;
+            }
+
             if (aluno.getNota() >= media) {
+                aprovadosCount++;
                 aprovados.add(aluno);
             } else {
                 reprovados.add(aluno);
+                reprovadosCount++;
             }
+
         }
+
+        float mediaGeral = somaNotas / alunos.size();
+
+        int totalAlunos = alunos.size();
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(localArquivoResumo))) {
             writer.println("Aprovados:");
@@ -68,6 +93,12 @@ public class GerenciadorGeral {
             for (Aluno aluno : reprovados) {
                 writer.printf("%d;%s;%.1f\n", aluno.getMatricula(), aluno.getNome(), aluno.getNota());
             }
+            writer.printf("Total de alunos: %d\n", totalAlunos);
+            writer.printf("Total de aprovados com nota igual ou superior a 6: %d\n", aprovadosCount);
+            writer.printf("Total de reprovados: %d\n", reprovadosCount);
+            writer.printf("Maior nota: %.1f\n", maiorNota);
+            writer.printf("Menor nota: %.1f\n", menorNota);
+            writer.printf("Média geral da turma: %.1f\n", mediaGeral);
         } catch (IOException e) {
             e.printStackTrace();
         }
